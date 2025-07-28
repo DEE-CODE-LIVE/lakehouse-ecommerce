@@ -1,0 +1,91 @@
+version: 2
+
+sources:
+  - name: lakehouse_project1
+    database: AwsDataCatalog
+    schema: lakehouse_project1
+    tables:
+      - name: ecommerceproject1_raw
+
+models:
+  - name: stg_orders
+    description: "Cleaned orders from raw ecommerce data"
+    columns:
+      - name: invoiceno
+        tests:
+          - not_null
+      - name: quantity
+        tests:
+          - not_null
+
+  - name: fact_sales
+    description: "Aggregated order-level sales metrics"
+    columns:
+      - name: invoiceno
+        tests:
+          - not_null
+      - name: total_amount
+        tests:
+          - not_null
+  - name: stg_customers
+    description: "Unique list of customers with country"
+    columns:
+      - name: customerid
+        tests:
+          - not_null
+          - unique
+      - name: country
+        tests:
+          - not_null
+  - name: stg_products
+    description: "Cleaned product info from raw orders"
+    columns:
+      - name: stockcode
+        tests:
+          - not_null
+          - unique
+      - name: description
+        tests:
+          - not_null
+      - name: unitprice
+        tests:
+          - not_null
+  - name: dim_customers
+    description: "Customer dimension table with 1 row per customer"
+    columns:
+      - name: customerid
+        tests:
+          - not_null
+          - unique
+      - name: country
+        tests:
+          - not_null
+
+  - name: dim_products
+    description: "Product dimension table with 1 row per product"
+    columns:
+      - name: stockcode
+        tests:
+          - not_null
+          - unique
+      - name: description
+        tests:
+          - not_null
+      - name: unitprice
+        tests:
+          - not_null
+  - name: fct_orders_extended
+    description: "Final reporting model combining facts and dimensions"
+    columns:
+      - name: invoiceno
+        tests:
+          - not_null
+      - name: customerid
+        tests:
+          - not_null
+      - name: stockcode
+        tests:
+          - not_null
+      - name: total_amount
+        tests:
+          - not_null
